@@ -21,9 +21,12 @@
   file: path=/tmp/wordpress-{{wp_version}}.tar.gz state=absent
 
 - name: Wordpresss | Fetch random salts for wp-config.php
-  local_action: command curl https://api.wordpress.org/secret-key/1.1/salt/
-  sudo: no
-  register: 'wp_salt'
+  get_url: https://api.wordpress.org/secret-key/1.1/salt/
+  force: yes
+  dest: /tmp/wordpress-secret-key-1.1.salt
+
+- set_fact: 
+  wp_salt: "{{ lookup('file', '/tmp/wordpress-secret-key-1.1.salt') }}"
 
 - name: Wordpresss | Copy wp-config.php file
   template: src=wp-config.php.j2 dest={{wp_install_dir}}/wp-config.php
