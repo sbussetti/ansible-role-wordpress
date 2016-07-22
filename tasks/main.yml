@@ -5,10 +5,15 @@
   when: wp_mysql_enable
 
 - name: Wordpresss | Ensure that installation directory exists
-  file: path={{wp_install_dir|dirname}} state=directory
+  file: 
+    path={{wp_install_dir|dirname}} 
+    state=directory
 
 - name: Wordpresss | Download {{wp_version}} to /tmp
-  get_url: url=http://wordpress.org/wordpress-{{wp_version}}.tar.gz force=no dest=/tmp/wordpress-{{wp_version}}.tar.gz
+  get_url: 
+    url=http://wordpress.org/wordpress-{{wp_version}}.tar.gz 
+    force=no 
+    dest=/tmp/wordpress-{{wp_version}}.tar.gz
   # TODO sha256sum="{{ wp_sha256sum }}"
 
 - name: Wordpresss | Extract archive
@@ -18,18 +23,23 @@
   command: /bin/mv /tmp/wordpress {{wp_install_dir}} creates={{wp_install_dir}}
 
 - name: Wordpresss | Remove wordpress-{{wp_version}}.tar.gz
-  file: path=/tmp/wordpress-{{wp_version}}.tar.gz state=absent
+  file: 
+    path=/tmp/wordpress-{{wp_version}}.tar.gz 
+    state=absent
 
 - name: Wordpresss | Fetch random salts for wp-config.php
-  get_url: https://api.wordpress.org/secret-key/1.1/salt/
-  force: yes
-  dest: /tmp/wordpress-secret-key-1.1.salt
+  get_url: 
+    url=https://api.wordpress.org/secret-key/1.1/salt/
+    force=yes
+    dest=/tmp/wordpress-secret-key-1.1.salt
 
 - set_fact: 
-  wp_salt: "{{ lookup('file', '/tmp/wordpress-secret-key-1.1.salt') }}"
+    wp_salt: "{{ lookup('file', '/tmp/wordpress-secret-key-1.1.salt') }}"
 
 - name: Wordpresss | Copy wp-config.php file
-  template: src=wp-config.php.j2 dest={{wp_install_dir}}/wp-config.php
+  template: 
+    src=wp-config.php.j2 
+    dest={{wp_install_dir}}/wp-config.php
 
 - name: Wordpresss | Change ownership of installation directory
   file: path={{wp_install_dir}} owner=www-data group=www-data mode=775 state=directory recurse=yes
